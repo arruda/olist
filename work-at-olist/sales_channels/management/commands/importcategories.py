@@ -22,4 +22,4 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS('%s' % file_name))
 
     def get_or_create_channel(self, channel):
-        pass
+        return Channel.objects.get_or_create(name=channel)[0]

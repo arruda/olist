@@ -3,7 +3,8 @@ from django.core.management import call_command
 from django.test import TestCase
 from django.utils.six import StringIO
 
-from .models import Category
+from .management.commands.importcategories import Command as ImportCategoriesCmd
+from .models import Category, Channel
 
 
 class TestCategory(TestCase):
@@ -43,3 +44,17 @@ class TestImportCategoriesCmd(TestCase):
 
         self.assertIn('some_channel', out.getvalue())
         self.assertIn('some_file', out.getvalue())
+
+    def test_get_or_create_channel_should_return_channel_if_exist(self):
+        expected_channel = Channel(name='existing_channel')
+        expected_channel.save()
+        cmd = ImportCategoriesCmd()
+        channel = cmd.get_or_create_channel('existing_channel')
+
+        self.assertEqual(expected_channel, channel)
+
+    def test_get_or_create_channel_should_create_channel_if_dont_exist(self):
+        cmd = ImportCategoriesCmd()
+        channel = cmd.get_or_create_channel('non_existing_channel')
+
+        self.assertEqual('non_existing_channel', channel.name)
