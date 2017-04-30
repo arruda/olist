@@ -7,3 +7,6 @@
 *.log
 .env
 tmp
+*.sublime-project
+*.sublime-workspace
+.email-messages
