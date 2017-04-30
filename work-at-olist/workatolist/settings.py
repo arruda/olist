@@ -22,8 +22,12 @@ ALLOWED_HOSTS = ['*']
 
 
 # Application definition
+environments_extra_modules = {
+    "production": (),
+    "local": ('django_extensions',),
+}
 
-INSTALLED_APPS = [
+DJANGO_CORE_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -31,6 +35,23 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
+
+THIRD_PARTY_APPS = [
+    'rest_framework',
+]
+
+THIRD_PARTY_APPS.extend(
+    config(
+        "ENVIRONMENT",
+        default="production",
+        cast=config.option(environments_extra_modules)
+    )
+)
+
+PROJECT_APPS = [
+]
+
+INSTALLED_APPS = DJANGO_CORE_APPS + THIRD_PARTY_APPS + PROJECT_APPS
 
 
 MIDDLEWARE_CLASSES = [
