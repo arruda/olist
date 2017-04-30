@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
+from django.core.management import call_command
 from django.test import TestCase
+from django.utils.six import StringIO
 
 from .models import Category
 
@@ -31,3 +33,13 @@ class TestCategory(TestCase):
         cat_1_a = Category(name='cat 1-A', parent=cat_1)
 
         self.assertEqual(str(cat_1_a), 'cat 1-A')
+
+
+class TestImportCategoriesCmd(TestCase):
+
+    def test_command_output(self):
+        out = StringIO()
+        call_command('importcategories', 'some_channel', 'some_file', stdout=out)
+
+        self.assertIn('some_channel', out.getvalue())
+        self.assertIn('some_file', out.getvalue())
