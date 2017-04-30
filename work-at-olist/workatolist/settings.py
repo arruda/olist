@@ -41,6 +41,7 @@ DJANGO_CORE_APPS = [
 
 THIRD_PARTY_APPS = [
     'rest_framework',
+    'mptt',
 ]
 
 THIRD_PARTY_APPS.extend(
@@ -52,6 +53,7 @@ THIRD_PARTY_APPS.extend(
 )
 
 PROJECT_APPS = [
+    'sales_channels',
 ]
 
 INSTALLED_APPS = DJANGO_CORE_APPS + THIRD_PARTY_APPS + PROJECT_APPS
