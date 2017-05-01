@@ -23,8 +23,14 @@ class Command(BaseCommand):
     def handle(self, channel_names, file_names, **options):
         channel_name = channel_names[0]
         file_name = file_names[0]
-        self.stdout.write(self.style.SUCCESS('%s' % channel_name))
-        self.stdout.write(self.style.SUCCESS('%s' % file_name))
+        self.stdout.write(
+            self.style.SUCCESS('Importing categories from "{}"" into channel "{}"'.format(file_name, channel_name))
+        )
+        channel = self.get_or_create_channel(channel_name)
+        csv_rows = self.read_csv_file(file_name)
+
+        category_col_number = self.get_category_col_number_from_csv(csv_rows)
+        self.save_categories_from_csv(channel, csv_rows, category_col_number=category_col_number)
 
     def get_or_create_channel(self, channel_name):
         return Channel.objects.get_or_create(name=channel_name)[0]
@@ -53,20 +59,21 @@ class Command(BaseCommand):
             last_category_dict = new_category
         return main_dict
 
-    def save_categories_from_csv(self, csv_rows, category_col_number=0):
+    def save_categories_from_csv(self, channel, csv_rows, category_col_number=0):
         categories_dict = {}
         for row in csv_rows:
             category_path = row[category_col_number]
             category_parents = category_path.split(' / ')
             categories_dict = self.update_dict_from_path(categories_dict, category_parents)
         for cat_name, childs in categories_dict.items():
-            self.create_category_and_childs(cat_name, None, childs)
+            self.create_category_and_childs(channel, cat_name, None, childs)
 
-    def create_category_and_childs(self, name, parent, childs):
-        category = Category(name=name, parent=parent)
+    def create_category_and_childs(self, channel, name, parent, childs):
+        category = Category(name=name, parent=parent, channel=channel)
         category.save()
+        self.stdout.write(self.style.SUCCESS('Creating category: %s' % str(category)))
         for cat_name, grand_childs in childs.items():
-            self.create_category_and_childs(cat_name, category, grand_childs)
+            self.create_category_and_childs(None, cat_name, category, grand_childs)
 
     def get_category_col_number_from_csv(self, csv_rows):
         return csv_rows[0].index('Category')

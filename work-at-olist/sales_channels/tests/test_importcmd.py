@@ -15,10 +15,10 @@ class TestImportCategoriesCmd(TestCase):
 
     def test_command_output(self):
         out = StringIO()
-        call_command('importcategories', 'some_channel', 'some_file', stdout=out)
+        call_command('importcategories', 'some_channel', FIXTURES_DIR.child('categories.csv'), stdout=out)
 
         self.assertIn('some_channel', out.getvalue())
-        self.assertIn('some_file', out.getvalue())
+        self.assertIn('categories.csv', out.getvalue())
 
     def test_get_or_create_channel_should_return_channel_if_exist(self):
         expected_channel = Channel(name='existing_channel')
@@ -74,19 +74,24 @@ class TestImportCategoriesCmd(TestCase):
         self.assertIn('e', main_dict.get('c').keys())
 
     def test_create_category_and_childs(self):
+        out = StringIO()
         cat_dict = {'a': {'b': {'c': {}}}}
-        cmd = ImportCategoriesCmd()
-        cmd.create_category_and_childs('main_cat', None, cat_dict)
+        cmd = ImportCategoriesCmd(stdout=out)
+        cmd.create_category_and_childs(None, 'main_cat', None, cat_dict)
 
         cat_c = Category.objects.get(name='c')
         self.assertEqual(str(cat_c), 'main_cat/a/b/c')
 
     def test_parse_categories_csv(self):
-        cmd = ImportCategoriesCmd()
+        out = StringIO()
+        channel = Channel(name='name')
+        channel.save()
+        cmd = ImportCategoriesCmd(stdout=out)
         csv_rows = cmd.read_csv_file(FIXTURES_DIR.child('categories.csv'))
-        cmd.save_categories_from_csv(csv_rows[1:], category_col_number=1)
+        cmd.save_categories_from_csv(channel, csv_rows[1:], category_col_number=1)
         all_cats = Category.objects.all()
         self.assertEqual(all_cats.count(), 23)
         self.assertEquals(str(Category.objects.get(name='XBOX 360')), 'Games/XBOX 360')
         self.assertEquals(str(Category.objects.get(name='Games', parent__name='XBOX One')), 'Games/XBOX One/Games')
         self.assertEquals(str(Category.objects.get(name='Computers', parent=None)), 'Computers')
+        self.assertEquals(str(Category.objects.get(name='Computers', channel=channel)), 'Computers')
