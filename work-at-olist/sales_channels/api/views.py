@@ -48,3 +48,15 @@ class CategoriesInChannelList(
 
         root_cat = Category.objects.filter(channel__pk=lookup_field)
         return Category.objects.get_queryset_descendants(root_cat, include_self=True)
+
+
+class CategoryDetailViewSet(
+        EncryptedLookupGenericViewSet,
+        viewsets.mixins.RetrieveModelMixin):
+    """
+    Return Category with it's Parents and Child
+    """
+    serializer_class = CategoryWithDetailSerializer
+    lookup_field = 'pk'
+
+    queryset = Category.objects.all()

@@ -6,6 +6,7 @@ from .import views
 
 router = routers.DefaultRouter()
 router.register(r'channels', views.ChannelViewSet)
+router.register(r'categories', views.CategoryDetailViewSet)
 router.register(r'categories_in_channel', views.CategoriesInChannelList, base_name='categories_in_channel')
 
 urlpatterns = [
