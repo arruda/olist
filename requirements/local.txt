@@ -1,2 +1,4 @@
 -r production.txt
 django_extensions==1.7.8
+ipdb==0.10.3
+ipython==6.0.0
