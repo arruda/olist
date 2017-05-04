@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import csv
-
+from unipath import Path
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from ...models import Channel, Category
@@ -40,7 +40,7 @@ class Command(BaseCommand):
 
     def read_csv_file(self, file_name):
         if file_name[0] != '/':
-            file_path = ROOT_DIR.child(file_name)
+            file_path = Path(ROOT_DIR, file_name)
         else:
             file_path = file_name
 
