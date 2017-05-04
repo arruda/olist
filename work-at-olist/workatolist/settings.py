@@ -41,6 +41,7 @@ DJANGO_CORE_APPS = [
 
 THIRD_PARTY_APPS = [
     'rest_framework',
+    'rest_framework_encrypted_lookup',
     'mptt',
 ]
 
@@ -148,3 +149,17 @@ STATICFILES_DIRS = [
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        # 'rest_framework.permissions.IsAdminUser',
+        'rest_framework.permissions.AllowAny',
+    ],
+    'PAGE_SIZE': 10
+}
+
+ENCRYPTED_LOOKUP = {
+    'lookup_field_name': 'pk',
+    'secret_key': config("SECRET_KEY"),
+}

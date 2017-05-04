@@ -4,5 +4,7 @@ prettyconf==1.2.3
 dj-database-url==0.4.2
 dj-email-url==0.0.10
 djangorestframework==3.6.2
+django-rest-encrypted-lookup==0.10.1
+coreapi==2.3.0
 whitenoise==3.2
 Unipath==1.1
