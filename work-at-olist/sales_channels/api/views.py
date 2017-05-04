@@ -20,3 +20,31 @@ class ChannelViewSet(EncryptedLookupGenericViewSet, viewsets.mixins.ListModelMix
     serializer_class = ChannelSerializer
     lookup_field = 'pk'
 
+
+class CategoriesInChannelList(
+        EncryptedLookupGenericViewSet,
+        viewsets.mixins.RetrieveModelMixin):
+    """
+    Return's the list of categories that belong to a given channel
+    """
+    serializer_class = CategorySerializer
+    lookup_field = 'pk'
+
+    def retrieve(self, request, pk=None):
+        queryset = self.get_queryset()
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def get_queryset(self):
+        lookup_field = self.kwargs.get('pk', None)
+        if not lookup_field:
+            raise Http404
+
+        root_cat = Category.objects.filter(channel__pk=lookup_field)
+        return Category.objects.get_queryset_descendants(root_cat, include_self=True)
