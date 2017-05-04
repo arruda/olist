@@ -7,6 +7,9 @@ from django.utils.translation import ugettext_lazy as _
 class Channel(models.Model):
     name = models.CharField(max_length=250, verbose_name=_('Name'), unique=True, blank=False, null=False)
 
+    class Meta:
+        ordering = ['name']
+
     def __str__(self):
         return "{}".format(self.name)
 
